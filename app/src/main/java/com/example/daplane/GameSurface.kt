@@ -2,56 +2,39 @@ package com.example.daplane
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import com.example.daplane.`interface`.Scene
-import com.example.daplane.utils.ClockGenerator
-import kotlin.concurrent.thread
+import com.example.daplane.base.Scene
 
 class GameSurface(
     context: Context?,
     attrs: AttributeSet?
 ) : SurfaceView(context, attrs), SurfaceHolder.Callback {
 
-    private var mPaint: Paint
+    private var controller: GameController
 
     init {
+        Log.i("GameSurface", "init: ");
         holder?.addCallback(this)
-        mPaint = Paint()
-        mPaint.style = Paint.Style.FILL;
-        mPaint.strokeWidth = 14f;
-        mPaint.color = Color.parseColor("red")
-
+        controller = GameController(holder);
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+        Log.i("GameSurface", "change: ");
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-
+        Log.i("GameSurface", "destory: ");
+        controller.pause()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        thread {
-            ClockGenerator.gameClock {
-                GameModel.nextFrameData(it)
-                nextFrame()
-            }
-        }
+        Log.i("GameSurface", "create: ");
+        controller.start()
     }
-
-    private fun nextFrame() {
-        val canvas = holder?.lockCanvas() ?: return
-        GameModel.scene.forEach {
-            it.draw(canvas, mPaint);
-        }
-        holder.unlockCanvasAndPost(canvas)
-    }
-
 
     private val notifyScene = mutableListOf<Scene>()
     @SuppressLint("ClickableViewAccessibility")
@@ -60,7 +43,7 @@ class GameSurface(
         //HIT TEST
         if (event.action == MotionEvent.ACTION_DOWN) {
             notifyScene.clear()
-            GameModel.scene.forEach {
+            GameModel.displayScenes.forEach {
                 if (it.hitTest(event)) {
                     notifyScene.add(it)
                 }

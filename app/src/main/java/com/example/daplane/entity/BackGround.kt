@@ -3,7 +3,7 @@ package com.example.daplane.entity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import com.example.daplane.`interface`.Scene
+import com.example.daplane.base.Scene
 
 class BackGround(
     x: Float,

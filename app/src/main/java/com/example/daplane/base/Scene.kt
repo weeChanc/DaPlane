@@ -1,4 +1,4 @@
-package com.example.daplane.`interface`
+package com.example.daplane.base
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -9,9 +9,7 @@ open abstract class Scene(
     var x: Float,
     var y: Float,
     var width: Int,
-    var height: Int,
-    var touchable: Boolean = false,
-    var enabled: Boolean = false
+    var height: Int
 ) {
 
 
@@ -20,17 +18,19 @@ open abstract class Scene(
     abstract fun nextFrame(clock: Long)
 
     fun contains(other: Scene): Boolean {
-        return Rect.intersects(Rect(
-            x.toInt(),
-            y.toInt(),
-            (x + width).toInt(),
-            (y + height).toInt()
-        ), Rect(
-            other.x.toInt(),
-            other.y.toInt(),
-            (other.x + other.width).toInt(),
-            (other.y + other.height).toInt()
-        ))
+        return Rect.intersects(
+            Rect(
+                x.toInt(),
+                y.toInt(),
+                (x + width).toInt(),
+                (y + height).toInt()
+            ), Rect(
+                other.x.toInt(),
+                other.y.toInt(),
+                (other.x + other.width).toInt(),
+                (other.y + other.height).toInt()
+            )
+        )
     }
 
     open fun hitTest(event: MotionEvent): Boolean {
@@ -41,7 +41,7 @@ open abstract class Scene(
                 (y + height).toInt()
             ).contains(event.x.toInt(), event.y.toInt())
         ) {
-            return onTouch(event);
+            return onTouch(event)
         }
         return false
     }
